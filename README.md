@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+# 🙂 SSR (서버 사이드 렌더링)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- 서버 사이드 렌더링 : UI를 서버에서 렌더링하는 것을 의미한다.
+- 클라이언트 사이드 렌더링 : UI 렌더링을 브라우저에서 모두 처리하는 것 <br>
+  ✔ 즉, 자바스크립트를 실행해야 작업자가 만든 화면이 사용자에게 보인다.
 
-## Available Scripts
+## 💫 장점
 
-In the project directory, you can run:
+- 구글, 네이버, 다음 등의 검색 엔진이 우리가 만든 웹 애플리케이션의 페이지를 원활하게 수집해준다.
+  ✔ 따라서 웹 서비스의 검색 엔진 최적화를 위해서라면 서버 사이드 렌더링을 구현 해주는 것이 좋다.
 
-### `npm start`
+- 초기 렌더링 성능을 개선할 수 있다. <br>
+  ✔ 예를들면, SSR이 구현되지 않은 웹 페이지에 사용자가 방문하면, JS가 로딩되고 실행될 때 까지 사용자는 비어 있는 페이지를 보며 대기해야한다. 여기에 API까지 호출해야 한다면 사용자의 대기 시간은 더더욱 길어진다. <br><br>
+  반면 서버 사이드 렌더링을 구현한 웹 페이지라면 JS 파일 다운로드가 완료되지 않은 시점에서도 HTML상에 사용자가 볼 수 있는 콘텐츠가 있기 때문에 대기 시간이 최소화되고, 이로 인해 사용자 경험도 향상된다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 💫 단점
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- SSR은 결국 원래 브라우저가 해야 할 일을 서버가 대신 처리하는 것이므로 서버 리소스가 사용된다.
+- 수많은 사용자가 동시에 웹 페이지에 접속하면 서버에 과부하가 생김. <BR>
+- ✔ 해결방안 : 사용자가 많은 서비스라면 <b>캐싱과 로드 밸런싱</b>을 통해 성능을 최적화 해줘야한다.
+- 개발이 어려워 질 수 있다. <br>
+  SSR을 하면 프로젝트의 구조가 좀 더 복잡해질 수 있고, <데이터 미리 불러오기 / 코드 스플리팅> 과의 호환 등 고려해야 할 사항이 더 많아지기 때문이다.
 
-### `npm test`
+<BR>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+<BR>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 💫 SSR과 코드 스플리팅 충돌
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- SSR과 코드스플리팅을 함께 적용시 작업이 꽤 까다롭다. <BR>
+  별도의 호환 작업 없이 두 기술을 함께 적용하면, 페이지에 깜박임이 발생한다.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 🔵 [충돌 흐름도]
 
-### `npm run eject`
+1. 서버 사이드 렌더링된 결과물이 브라우저에 나타난다
+2. JS파일 로딩 시작
+3. JS 실행되면서 아직 불러오지 않은 컴포넌트를 NULL로 렌더링
+4. 페이지에서 코드 스플리팅된 컴포넌트들이 사라짐
+5. 코드 스플리팅된 컴포넌트들이 로딩된 이후 제대로 나타남
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+이런 이슈를 해결하려면 라우트 경로마다 코드 스플리팅된 파일 중에서 필요한 모든 파일을 브라우저에서 렌더링하기 전에 미리 불러와야 한다.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<br>
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### 🔵 [해결방안]
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Loadable Components 라이브러리에서 제공하는 기능을 써서 서버 사이드 렌더링 후 필요한 파일의 경로를 추출하여 렌더링 결과에 스크립트/스타일 태그를 삽입해 주는 방법입니다.
 
-## Learn More
+<br>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+<br>
 
-### Code Splitting
+## 💫 프로젝트 시작
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+<br>
 
-### Analyzing the Bundle Size
+1. 라이브러리 설치하기
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+$npm install  react-router-dom
+```
 
-### Making a Progressive Web App
+2. 컴포넌트 만들기
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- components/Red.js ➡ 빨간 상자 컴포넌트
+- components/Blue.js ➡ 파란 상자 컴포넌트
+- components/Menu.js ➡ 링크로 이동 시켜주는 메뉴 컴포넌트
+  <br>
+  <br>
+  <br>
 
-### Advanced Configuration
+- pages/RedPage.js
+- pages/BluePage.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<br>
