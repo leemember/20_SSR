@@ -195,3 +195,39 @@ express 설치한 후에 [index.server.js] 코드 작성하기
 그러니 url을 요청해달란 뜻임.
 
 StaticRouter에 context라는 props도 넣어주었다. 이 값을 사용하여 나중에 렌더링한 컴포넌트에 따라 HTTP 상태 코드를 설정해 줄 수 있다.
+
+### 6. 개발자 도구로 네트워크 확인
+
+만약 js를 로딩하면 현재 브라우저에 보이는 데이터가 서버에 렌더링된 것인지, 클라이언트에서 렌더링된 것인지 분간하기 위해서 개발자도구의 Network 탭을 열고 새로고침을 한다.
+
+새로고침을 하고 나서 맨 위에 있는 blue를 누른 후 우측의 Response를 눌르면 컴포넌트 렌더링 결과가 문자열로 잘 전달되는 것을 확인 하면 된다.
+
+### 7. 정적 파일 제공하기
+
+이번에는 Express에 내장되어 있는 static 미들웨어를 사용하여 서버를 통해 build에 있는 JS, CSS 정적 파일들에 접근할 수 있도록 하기 !!! 
+
+[index.server.js]
+
+```
+코드 상단에
+import path from 'path'; // 추가
+
+const serve = express.static(path.resolve('./build'), {
+    index: false // "/" 경로에서 index.html을 보여 주지 않도록 설정
+});
+```
+
+그다음에는 JS와 CSS 파일을 불러오도록 HTML에 코드를 삽입해줘야하다. 불러와야하는 파일 이름은 매번 빌드할 때마다 바뀌기 때문에 빌드하고 나서 만들어지는 asset-manifest.json 파일을 참고하여 불러오도록 작성한다.
+
+```
+yarn build
+```
+한번 해주기
+
+[build-asset-manifest.json] 파일에서,
+- main.css
+- main.js
+- runtime~main.js
+- static/js/2.7980f885.chunk.js
+
+이 파일들을 html 내부에 삽입해 주어야 한다.
