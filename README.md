@@ -89,9 +89,14 @@ $npm install react-router-dom
 
 이 파일부터 시작하여 내부에 필요한 다른 컴포넌트와 모듈을 불러오고 있다.
 
+- 프로젝트 전에 라이브러리 설치해야 된다.
+npm 프로젝트에서 yarn 설치 후 eject 설치하는 법
 ```
-$npm install eject
+$npm install -g yarn
+$yarn eject
 ```
+
+<br>
 
 서버 사이드 렌더링을 할 때는 서버를 위한 엔트리 파일을 따로 생성해야한다.
 
@@ -99,4 +104,28 @@ $npm install eject
 
 서버에서 리액트 컴포넌트를 렌더링할 때는 ReactDOMServer의 renderToString이라는 함수를 이용한다. 이 함수에 JSX를 넣어서 호출하면 렌더링 결과를 문자열로 반환해준다.
 
+<br>
+
 ### 2. SSR 전용 웹팩 환경 설정 작성하기
+
+config 경로의 paths.js 파일 열어서
+module.exports 부분에 코드 두 줄 추가
+
+```
+ssrIndexJs:resolveApp('src/index.server.js'), //SSR 엔트리
+ssrBuild:resolveApp('dist') //웹팩 처리 후 저장 경로
+```
+ssrIndexJs, ssrBuild 정보를 추가해준다. 
+
+ssrIndexJs : 불러올 파일의 경로
+
+ssrBuild : 웹팩으로 처리한 뒤 결과물을 저장할 경로
+
+- [config]-[webpack.config.server.js] 생성
+
+(1) 웹팩 기본 설정 할 때, 빌드할 때 어떤 파일에서 시작해 파일들을 불러오는지 또 어떤 결과물을 저장할지 정해준다.
+
+(2) 로더 설정 : 웹팩의 로더는 파일을 불러올 때 확장자에 맞게 필요한 처리를 해준다. 예를들어 자바스크립트는 babel을 사용하여 트랜스파일링을 해주고, CSS는 모든 CSS코드를 결합해주고, 이미지 파일은 다른 경로에 따로 저장하고 그 파일에 대한 경로를 자바스크립트에서 참조할 수 있게 해준다.
+
+
+
