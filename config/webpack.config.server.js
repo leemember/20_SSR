@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const getClientEnvironment = require('./env');
 
 const cssRegex = /\.css$/;
-const cssModuleRegex = /\.module\.css&/;
+const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
@@ -20,16 +20,16 @@ module.exports = {
         filename: 'server.js', // 빌드경로
         chunkFilename: 'js/[name].chunk.js', // 청크 파일 이름
         publicPath: paths.publicUrlOrPath, // 정적 파일이 제공될 경로
-
     },
 
     module: {
         rules: [
             {
                 oneOf: [
-                    //자바스크립트를 위한 처리 //
+                    //자바스크립트를 위한 처리
+                    //기존 webpak.config.js를 참고하여 작성
                     {
-                        test: /\.(js|mjs|jsx|ts|tsx)$./,
+                        test: /\.(js|mjs|jsx|ts|tsx)$/,
                         include: paths.appSrc,
                         loader: require.resolve('babel-loader'),
                         options: {
@@ -81,7 +81,7 @@ module.exports = {
                             {
                                 loader: require.resolve('css-loader'),
                                 options: {
-                                    onlyLocals:true,
+                                    onlyLocals:true
                                 }
                             },
                             require.resolve('sass-loader')
@@ -108,8 +108,9 @@ module.exports = {
                         test: [/\.bmp$/, /\.gif$/, /\.jpg?g$/, /\.png$/],
                         loader: require.resolve('url-loader'),
                         options: {
-                            emitFile: false,
-                            limit: 10000,
+                            emitFile: false, //파일을 따로 저장하지 않는 옵션
+                            limit: 10000, // 원래는 9.76KB가 넘어가면 파일로 저장하는데
+                            //emitFile같이 false일 때는 경로만 준비하고 파일은 저장하지 않습니다.
                             name: 'static/media/[name].[hash:8].[ext]'
                         }
                     },
@@ -118,7 +119,7 @@ module.exports = {
                         loader: require.resolve('file-loader'),
                         exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/,/\.json$/],
                         options: {
-                            emitFile: false,
+                            emitFile: false, //파일을 따로 저장하지 않는 옵션
                             name: 'static/media/[name].[hash:8].[ext]'
                         }
                     }
@@ -139,7 +140,7 @@ module.exports = {
 
     externals: [nodeExternals()],
     plugins: [
-        new webpack.DefinePlugin(env.stringified)
+        new webpack.DefinePlugin(env.stringified)  
         //환경 변수를 주입해 줍니다.
     ]
 };
