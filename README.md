@@ -186,3 +186,12 @@ $yarn add express
 ```
 
 express 설치한 후에 [index.server.js] 코드 작성하기
+
+<br>
+
+이 과정에서 리액트 라우터 안에 들어 있는 StaticRouter 라는 컴포넌트가 사용되었다. 이 라우터 컴포넌트는 주로 서버 사이드 렌더링 용도로 사용되는 라우터이다. props로 넣어주는 location 값에 따라 라우팅을 해준다.
+지금은 req.url이라는 값을 넣어주었는데 여기서 req객체는 요청에 대한 정보를 지니고 있다.
+
+그러니 url을 요청해달란 뜻임.
+
+StaticRouter에 context라는 props도 넣어주었다. 이 값을 사용하여 나중에 렌더링한 컴포넌트에 따라 HTTP 상태 코드를 설정해 줄 수 있다.
