@@ -4,6 +4,44 @@ import express from 'express';
 import {StaticRouter } from 'react-router-dom';
 import App from './App';
 import path from 'path';
+import fs from 'fs';
+
+//asset-manifest.json에서 파일 경로들을 조회한다.
+const manifest = JSON.parse(
+    fs.readFileSync(path.resolve('./build/asset-manifest.json'), 'utf8')
+);
+
+const chunks = Object.keys(manifest.files)
+    .filter(key => /chunks\.js$/.exec(key))
+    .map(key => `<script src="${manifest.file[key]}"></script>`) // 스크립트 태그로 변환하고
+    .join(''); // 합치기
+
+function createPage(root) {
+    return `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <meta
+         name="viewport" 
+         content="width=device-width, initial-scale=1, shrink-to-fit=no"
+         />
+         <meta name="theme-color" content="#000000" />
+        <title>리액트 앱</title>
+        <link href="${manifest.files['main.css']}" rel="stylesheet" />
+    </head>
+    <body>
+        <noscript>하이</noscript>
+        <div id="root">
+            ${root}
+        </div>
+        <script src="${manifest.files['runtime~main.js']}"></script>  
+        ${chunks}
+        <script src="${manifest.files['main.js']}</script> 
+    </body>
+    </html>
+    `;
+}
 
 const app = express();
 
@@ -19,8 +57,9 @@ const serverRender = (req, res, next) => {
     );
 
     const root = ReactDOMServer.renderToString(jsx); //렌더링을 하고
-    res.send(root); //클라이언트에게 결과물을 응답합니다.
+    res.send(createPage(root)); //클라이언트에게 결과물을 응답합니다.
 };
+
 const serve = express.static(path.resolve('./build'), {
     index: false // "/" 경로에서 index.html을 보여 주지 않도록 설정
 });
