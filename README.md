@@ -136,3 +136,53 @@ $yarn add webpack-node-externals
 서버를 위해 번들링 할 때는 node_modules에서 불러오는 것을 제외하고 번들링하는 것이 좋다. 이를 위해 위 라이브러리를 사용해야 한다.
 
 설치한 이 라이브러리를 webpack.config.server 상단에 불러와 설정에 적용해준다.
+
+### 4. 빌드 스크립트 작성하기
+
+scripts/build.server.js 코드를 다 작성하고
+
+```
+$node scripts/build.server.js
+```
+이 명령어를 실행하여 빌드가 잘되는지 확인한다.
+
+성공적으로 잘 싱행되면 다음 명령어를 실행하여 작성한 결과물이 잘 작동하는지 확인
+
+```
+$node dist/server.js
+```
+
+테스트 삼아 만든 JSX가 문자열 형태로 잘 렌더링되면, 매번 빌드하고 실행할 때마다 파일 경로를 입력하는 것이 번거로울 수 있으니, package.json에서 스크립트를 생성하여 더 편하게 명령어를 입력할 수 있도록 한다.
+
+```
+"scripts": {
+    "start": "node scripts/start.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "start:server": "node dist/server.js",
+    "build:server": "node scripts/build.server.js"
+  },
+```
+이렇게 스크립트 부분에다가 "start:server", "build:server"를 추가해주면
+
+```
+$yarn build:server
+$yarn start:server
+```
+
+이렇게만 입력해도 잘 작동하는 것을 볼 수 있다.
+
+### 5. 서버 코드 작성하기
+
+서버 사이드 렌더링을 처리할 서버를 작성한다. Express라는 Node.js 웹 프레임워크를 사용하여 웹 서버를 만든다. 이 과정은 꼭 Express가 아니어도 상관 없다.
+
+😀 Express 대체 방법
+
+- Koa, Hapi, connect 라이브러리 사용시 구현 가능
+- Express를 사용하는 이유 : 해당 프레임워크가 사용률이 가장 높고, 추후 정적 파일들을 호스팅할 때도 쉽게 구현할 수 있기 때문이다.
+
+```
+$yarn add express
+```
+
+express 설치한 후에 [index.server.js] 코드 작성하기
