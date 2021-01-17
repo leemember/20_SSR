@@ -1,10 +1,15 @@
+const nodeExternals = require('webpack-node-externals');
 const paths = require('./paths');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent'); // CSS 모듈의 고유 className을 만들때 필요한 옵션
+const webpack = require('webpack');
+const getClientEnvironment = require('./env');
 
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css&/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
+const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 
 module.exports = {
     mode: 'production', // 프로덕션 모드로 설정하여 최적화 옵션들 활성화
@@ -120,6 +125,22 @@ module.exports = {
                 ]
             }            
         ]
-    }
+    },
+    resolve: {
+        modules: ['node_modules']
+    },
+    /*
+    이렇게 했을 때, react와 react-dom/server같은 라이브러리를 import 구문으로 불러오면 node-modules에서 찾아 사용한다.
+    라이브러리를 불러오면 빌드할 때 결과물 파일 안에 해당 라이브러리 관련 코드가 함께 번들링된다.
+    브라우저에서 사용할 때는 결과물 파일에 리액트 라이브러리와 우리의 애플리케이션에 관한 코드가 공존해야 하는데,
+    서버에서는 굳이 결과물 파일 안에 리액트 라이브러리가 들어있지 않아도 된다.
+    😁 node_modules를 통해 바로 불러와 사용할 수 있기 때문이다.
+    */
+
+    externals: [nodeExternals()],
+    plugins: [
+        new webpack.DefinePlugin(env.stringified)
+        //환경 변수를 주입해 줍니다.
+    ]
 };
 
